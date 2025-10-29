@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: java-api }
+  template:
+    metadata:
+      labels: { app: java-api }
+    spec:
+      containers:
+        - name: java-api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DATABASE_URL
+              value: "jdbc:postgresql://pg-postgresql.data.svc.cluster.local:5432/appdb"
+            - name: DB_USER
+              value: "appuser"
+            - name: DB_PASS
+              value: "apppass"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: java-api
+spec:
+  selector: { app: java-api }
+  ports:
+    - port: 80
+      targetPort: 8080

@@ -1,0 +1,5 @@
+image:
+  repository: java-api
+  tag: dev
+service:
+  port: 8080

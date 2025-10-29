@@ -1,0 +1,5 @@
+image:
+  repository: python-api
+  tag: dev
+service:
+  port: 8000

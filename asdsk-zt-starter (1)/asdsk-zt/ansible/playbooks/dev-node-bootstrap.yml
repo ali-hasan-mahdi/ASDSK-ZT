@@ -1,0 +1,35 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Ensure base packages
+      package:
+        name: [git, curl, ca-certificates]
+        state: present
+
+    - name: Install Docker (script)
+      shell: |
+        curl -fsSL https://get.docker.com | sh
+      args: { creates: /usr/bin/docker }
+
+    - name: Add user to docker group
+      user:
+        name: "{{ ansible_user_id }}"
+        groups: docker
+        append: yes
+
+    - name: Install k3d
+      shell: |
+        curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+      args: { creates: /usr/local/bin/k3d }
+
+    - name: Install kubectl
+      shell: |
+        curl -fsSLo /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+        chmod +x /usr/local/bin/kubectl
+      args: { creates: /usr/local/bin/kubectl }
+
+    - name: Install helm
+      shell: |
+        curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      args: { creates: /usr/local/bin/helm }
